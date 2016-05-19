@@ -3,6 +3,7 @@
 import path from 'path';
 import fs from 'fs';
 import {isStream, isBuffer} from 'stc-helper';
+import Dependence from './dependence.js';
 
 /**
  * virtual file for stc
@@ -23,11 +24,18 @@ export default class {
     if(!this.path){
       throw new Error('path must be set');
     }
-    
+    //file depedence
+    this.dependence = new Dependence();
+    //content to tokens
     this._tokens = null;
+    //file content
     this._content = '';
+    //file stat
     this._stat = options.stat;
+    //file extname
     this._extname = '';
+    //file type
+    this._type = '';
   }
   /**
    * pipe to stream
@@ -130,5 +138,18 @@ export default class {
    */
   set content(content){
     this._content = content;
+  }
+  /**
+   * get file type
+   */
+  get type(){
+    return this._type;
+  }
+  /**
+   * set file type
+   */
+  set type(type){
+    this._type = type;
+    return this;
   }
 }
