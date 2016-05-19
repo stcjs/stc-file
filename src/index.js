@@ -19,13 +19,11 @@ export default class {
     
     this.cwd = options.cwd || process.cwd();
     this.base = options.base || this.cwd;
-    this.path = options.path;
+    this._path = options.path;
     
-    if(!this.path){
+    if(!this._path){
       throw new Error('path must be set');
     }
-    //file depedence
-    this.dependence = new Dependence();
     //content to tokens
     this._tokens = null;
     //file content
@@ -36,6 +34,31 @@ export default class {
     this._extname = '';
     //file type
     this._type = '';
+    
+    //path history, filepath will be changed in workflow
+    this.pathHistory = [this._path];
+    //file depedence
+    this.dependence = new Dependence();
+  }
+  /**
+   * get path
+   */
+  get path(){
+    return this._path;
+  }
+  /**
+   * set path
+   */
+  set path(filepath){
+    this._path = filePath;
+    this.pathHistory.push(filePath);
+    return this;
+  }
+  /**
+   * is path
+   */
+  isPath(filePath){
+    return this.pathHistory.indexOf(filePath) > -1;
   }
   /**
    * pipe to stream
