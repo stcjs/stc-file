@@ -2,8 +2,16 @@
 
 import path from 'path';
 import fs from 'fs';
-import {isStream, isBuffer} from 'stc-helper';
+import {isStream, isBuffer, promisify} from 'stc-helper';
 import Dependence from './dependence.js';
+
+/**
+ * ast default handle
+ */
+let defaultAstHandle = {
+  parse: () => {},
+  stringify: () => {}
+};
 
 /**
  * virtual file for stc
@@ -19,26 +27,32 @@ export default class {
     
     this.cwd = options.cwd || process.cwd();
     this.base = options.base || this.cwd;
+    this.astHandle = options.astHandle || defaultAstHandle;
+    
     this._path = options.path;
     
     if(!this._path){
       throw new Error('path must be set');
     }
-    //content to tokens
-    this._tokens = null;
     //file content
-    this._content = '';
+    this._content = null;
     //file stat
     this._stat = options.stat;
     //file extname
     this._extname = '';
     //file type
-    this._type = '';
+    this._type = ''; //template or static
+    //file other props
+    this._props = {};
+    //file content ast
+    this._ast = null;
     
     //path history, filepath will be changed in workflow
     this.pathHistory = [this._path];
     //file depedence
     this.dependence = new Dependence();
+    //make sure only one handler to deal current file
+    this.promise = Promise.resolve();
   }
   /**
    * get path
@@ -50,8 +64,8 @@ export default class {
    * set path
    */
   set path(filepath){
-    this._path = filePath;
-    this.pathHistory.push(filePath);
+    this._path = filepath;
+    this.pathHistory.push(filepath);
     return this;
   }
   /**
@@ -132,35 +146,56 @@ export default class {
     return stat && stat.isDirectory();
   }
   /**
-   * get file tokens
-   */
-  get tokens(){
-    return this._tokens;
-  }
-  /**
-   * set file tokens
-   */
-  set tokens(tokens){
-    this._tokens = tokens;
-  }
-  /**
    * get file content
    */
-  get content(){
-    if(this._content){
+  async getContent(encoding = null){
+    if(this.prop('contentGetted')){
+      if(this._ast){
+        this._content = this.astHandle.stringify(this._ast, this);
+      }
       return this._content;
     }
     if(this.isFile()){
-      let buffer = fs.readFileSync(this.path);
-      this._content = buffer;
+      let fn = promisify(fs.readFile, fs);
+      this._content = await fn(this.path, encoding);
+      this.prop('contentGetted', true);
+    }else{
+      throw new Error('must be a file when get content');
     }
     return this._content;
   }
   /**
    * set file content
    */
-  set content(content){
+  setContent(content){
     this._content = content;
+    this._ast = null;
+    return this;
+  }
+  /**
+   * has ast
+   */
+  hasAst(){
+    return !!this._ast;
+  }
+  /**
+   * get file content ast
+   */
+  async getAst(){
+    if(this._ast){
+      return this._ast;
+    }
+    let content = await this.getContent('utf8');
+    this._ast = this.astHandle.parse(content, this);
+    return this._ast;
+  }
+  /**
+   * set file content ast
+   */
+  setAst(ast){
+    this._ast = ast;
+    this._content = null;
+    return this;
   }
   /**
    * get file type
@@ -173,6 +208,15 @@ export default class {
    */
   set type(type){
     this._type = type;
+    return this;
+  }
+  
+  // get or set prop
+  prop(name, value){
+    if(value === undefined){
+      return this._props[name];
+    }
+    this._props[name] = value;
     return this;
   }
 }
