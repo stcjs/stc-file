@@ -101,17 +101,19 @@ export default class {
    * get path extname
    */
   get extname(){
-    if(this._extname){
-      return this._extname;
-    }
-    this._extname = path.extname(this.path);
-    return this._extname;
+    return path.extname(this.path);
   }
   /**
    * set path extname
    */
   set extname(extname){
-    this._extname = extname;
+    if(extname[0] !== '.'){
+      extname = '.' + extname;
+    }
+    let preExt = this.extname;
+    let path = this.path.substr(0, this.path.length - preExt.length) + extname;
+    this.path = path;
+    return this;
   }
   /**
    * get file stat
@@ -148,7 +150,7 @@ export default class {
   /**
    * get file content
    */
-  async getContent(encoding = null){
+  async getContent(encoding = null, notFoundDefaultValue){
     if(this.prop('contentGetted')){
       if(this._ast){
         this._content = this.astHandle.stringify(this._ast, this);
@@ -159,7 +161,13 @@ export default class {
       let fn = promisify(fs.readFile, fs);
       this._content = await fn(this.path, encoding);
       this.prop('contentGetted', true);
-    }else{
+    }
+    else if(notFoundDefaultValue !== undefined){
+      this._content = notFoundDefaultValue;
+      this.prop('contentGetted', true);
+      return this._content;  
+    }
+    else{
       throw new Error('must be a file when get content');
     }
     return this._content;
