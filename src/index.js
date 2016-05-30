@@ -178,6 +178,7 @@ export default class {
   setContent(content){
     this._content = content;
     this._ast = null;
+    this.prop('contentGetted', true);
     return this;
   }
   /**
@@ -203,6 +204,7 @@ export default class {
   setAst(ast){
     this._ast = ast;
     this._content = null;
+    this.prop('contentGetted', true);
     return this;
   }
   /**
