@@ -64,6 +64,9 @@ export default class {
    * set path
    */
   set path(filepath){
+    if(filepath === this._path){
+      return this;
+    }
     this._path = filepath;
     this.pathHistory.push(filepath);
     return this;
@@ -111,6 +114,9 @@ export default class {
       extname = '.' + extname;
     }
     let preExt = this.extname;
+    if(extname === preExt){
+      return this;
+    }
     let path = this.path.substr(0, this.path.length - preExt.length) + extname;
     this.path = path;
     return this;
