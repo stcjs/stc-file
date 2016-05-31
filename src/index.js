@@ -2,7 +2,7 @@
 
 import path from 'path';
 import fs from 'fs';
-import {isStream, isBuffer, promisify} from 'stc-helper';
+import {isStream, isBuffer, promisify, isString} from 'stc-helper';
 import Dependence from './dependence.js';
 
 /**
@@ -152,11 +152,12 @@ export default class {
    */
   async getContent(encoding = null, notFoundDefaultValue){
     if(this.prop('contentGetted')){
-      if(this._ast){
+      if(this._ast || !this._content){
         this._content = this.astHandle.stringify(this._ast, this);
       }
       return this._content;
     }
+    
     if(this.isFile()){
       let fn = promisify(fs.readFile, fs);
       this._content = await fn(this.path, encoding);
@@ -176,6 +177,9 @@ export default class {
    * set file content
    */
   setContent(content){
+    if(!isStream(content) && !isBuffer(content) && !isString(content)){
+      throw new Error('content data type is not valid', typeof content);
+    }
     this._content = content;
     this._ast = null;
     this.prop('contentGetted', true);
