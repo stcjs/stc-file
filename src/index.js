@@ -40,8 +40,6 @@ export default class {
     this._stat = options.stat;
     //file extname
     this._extname = '';
-    //file type
-    this._type = ''; //template or static
     //file other props
     this._props = {};
     //file content ast
@@ -104,15 +102,12 @@ export default class {
    * get path extname
    */
   get extname(){
-    return path.extname(this.path);
+    return path.extname(this.path).slice(1);
   }
   /**
    * set path extname
    */
   set extname(extname){
-    if(extname[0] !== '.'){
-      extname = '.' + extname;
-    }
     let preExt = this.extname;
     if(extname === preExt){
       return this;
@@ -215,19 +210,6 @@ export default class {
     this._ast = ast;
     this._content = null;
     this.prop('contentGetted', true);
-    return this;
-  }
-  /**
-   * get file type
-   */
-  get type(){
-    return this._type;
-  }
-  /**
-   * set file type
-   */
-  set type(type){
-    this._type = type;
     return this;
   }
   
