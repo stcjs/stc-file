@@ -108,6 +108,9 @@ export default class {
    * set path extname
    */
   set extname(extname){
+    if(extname[0] === '.'){
+      extname = extname.slice(1);
+    }
     let preExt = this.extname;
     if(extname === preExt){
       return this;
