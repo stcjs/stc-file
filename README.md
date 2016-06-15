@@ -17,31 +17,22 @@ let file = new File({
 
 ## API
 
+### path
+
+get or set file path.
+
+```js
+file.path = 'xxx';
+file.path; 
+```
+
 ### extname
 
 get or set file extname.
 
 ```js
-file.extname; // .html
-file.extname = '.txt'; //
-```
-
-### content
-
-get or set file content.
-
-```js
-file.content; //buffer
-file.content = new Buffer('xxx'); //set file content
-```
-
-### tokens
-
-get or set file tokens.
-
-```js
-file.tokens; // file content tokens
-file.tokens = []; //set file tokens
+file.extname; // html
+file.extname = 'txt'; //
 ```
 
 ### stat
@@ -74,3 +65,30 @@ file.pipe(stream, {
   end: true
 });
 ```
+
+### isPath(filepath)
+
+check file path
+
+### getContent(encoding)
+
+get file content,
+
+* `encoding` default is `null`
+
+### setContent(content)
+
+
+### hasAst()
+
+check file aleady have ast
+
+### getAst()
+
+### setAst(ast)
+
+### prop(name, value)
+
+get or set other property for file
+
+
