@@ -184,6 +184,9 @@ export default class {
     if(!isStream(content) && !isBuffer(content) && !isString(content)){
       throw new Error('content data type is not valid', typeof content);
     }
+    if(content === this._content){
+      return this;
+    }
     this._content = content;
     this._ast = null;
     this.prop('contentGetted', true);
