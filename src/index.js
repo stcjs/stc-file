@@ -156,7 +156,7 @@ export default class {
    */
   async getContent(encoding = null, notFoundDefaultValue){
     if(this.prop('contentGetted')){
-      if(!this._content){
+      if(this._content === null){
         this._content = this.astHandle.stringify(this._ast, this);
       }
       return this._content;
