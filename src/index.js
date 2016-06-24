@@ -2,8 +2,9 @@
 
 import path from 'path';
 import fs from 'fs';
-import {isStream, isBuffer, promisify, isString} from 'stc-helper';
+import {isStream, isBuffer, promisify, isString, defer} from 'stc-helper';
 import Dependence from './dependence.js';
+import Await from './await.js';
 
 /**
  * ast default handle
@@ -34,23 +35,25 @@ export default class {
     if(!this._path){
       throw new Error('path must be set');
     }
-    //file content
+    // file content
     this._content = null;
-    //file stat
+    // file stat
     this._stat = options.stat;
-    //file extname
+    // file extname
     this._extname = '';
-    //file other props
+    // file other props
     this._props = {};
-    //file content ast
+    // file content ast
     this._ast = null;
     
-    //path history, filepath will be changed in workflow
+    // path history, filepath will be changed in workflow
     this.pathHistory = [this._path];
-    //file depedence
+    // file depedence
     this.dependence = new Dependence();
-    //make sure only one handler to deal current file
-    this.promise = Promise.resolve();
+    // await instance
+    this.await = new Await();
+    // run promise
+    this._promises = {};
   }
   /**
    * get path
@@ -229,5 +232,48 @@ export default class {
     }
     this._props[name] = value;
     return this;
+  }
+  /**
+   * get or set promise
+   */
+  promise(key, value, deferred){
+    if(!(key in this._promises)){
+      this._promises[key] = {};
+    }
+    let item = this._promises[key];
+    // set deferred
+    if(deferred === 'set'){
+      if(item.deferred){
+        return;
+      }
+      let deferred = defer();
+      item.deferred = deferred;
+      item.value = deferred.promise;
+      return;
+    }
+    // resolve deferred
+    if(deferred === 'update'){
+      if(!item.deferred){
+        return;
+      }
+      item.deferred.resolve(value);
+      item.deferred = null;
+      item.value = value;
+    }
+    if(value === undefined){
+      return item.value;
+    }
+    item.value = value;
+  }
+  /**
+   * run async function
+   */
+  run(key, callback){
+    if(this._promises[key]){
+      return this._promises[key].value;
+    }
+    let data = this.await.run(key, callback);
+    this._promises[key] = {value: data};
+    return data;
   }
 }
