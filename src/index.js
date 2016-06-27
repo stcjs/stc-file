@@ -216,9 +216,9 @@ export default class {
    * set file content ast
    */
   setAst(ast){
-    if(ast === this._ast){
-      return this;
-    }
+    // if(ast === this._ast){
+    //   return this;
+    // }
     this._ast = ast;
     this._content = null;
     this.prop('contentGetted', true);
