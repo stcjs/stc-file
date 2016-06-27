@@ -185,7 +185,7 @@ export default class {
    */
   setContent(content){
     if(!isStream(content) && !isBuffer(content) && !isString(content)){
-      throw new Error('content data type is not valid', typeof content);
+      throw new Error('content data type is not valid');
     }
     if(content === this._content){
       return this;
@@ -205,7 +205,7 @@ export default class {
    * get file content ast
    */
   async getAst(){
-    if(this._ast){
+    if(this._ast !== null){
       return this._ast;
     }
     let content = await this.getContent('utf8');
