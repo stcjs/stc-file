@@ -268,12 +268,20 @@ export default class {
   /**
    * run async function
    */
-  run(key, callback){
+  async run(key, callback, wait = true){
     if(this._promises[key]){
       return this._promises[key].value;
     }
-    let data = this.await.run(key, callback);
-    this._promises[key] = {value: data};
-    return data;
+    let timer = setInterval(() => {}, 100 * 1000);
+    let promise = wait ? this.await.run(key, callback) : Promise.resolve(callback());
+    let value = await promise.then(data => {
+      clearInterval(timer);
+      return data;
+    }).catch(err => {
+      clearInterval(timer);
+      return Promise.reject(err);
+    });
+    this._promises[key] = {value};
+    return value;
   }
 }
