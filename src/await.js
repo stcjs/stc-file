@@ -25,16 +25,12 @@ export default class Await {
     if(!(key in this.queue)){
       this.queue[key] = [];
       return Promise.resolve(fn()).then(data => {
-        process.nextTick(() => {
-          this.queue[key].forEach(deferred => deferred.resolve(data));
-          delete this.queue[key];
-        });
+        this.queue[key].forEach(deferred => deferred.resolve(data));
+        delete this.queue[key];
         return data;
       }).catch(err => {
-        process.nextTick(() => {
-          this.queue[key].forEach(deferred => deferred.reject(err));
-          delete this.queue[key];
-        });
+        this.queue[key].forEach(deferred => deferred.reject(err));
+        delete this.queue[key];
         return Promise.reject(err);
       });
     }else{
