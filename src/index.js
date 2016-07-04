@@ -105,7 +105,7 @@ export default class {
    * get path extname
    */
   get extname(){
-    return path.extname(this.path).slice(1);
+    return path.extname(this.path).slice(1).toLowerCase();
   }
   /**
    * set path extname
