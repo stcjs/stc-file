@@ -167,18 +167,20 @@ export default class {
     
     if(this.isFile()){
       let fn = promisify(fs.readFile, fs);
-      this._content = await fn(this.path, encoding);
+      this._content = await this.await.run('getFileContent', () => {
+        return fn(this.path, encoding);
+      });
       this.prop('contentGetted', true);
+      return this._content;
     }
-    else if(notFoundDefaultValue !== undefined){
+    
+    if(notFoundDefaultValue !== undefined){
       this._content = notFoundDefaultValue;
       this.prop('contentGetted', true);
       return this._content;  
     }
-    else{
-      throw new Error('must be a file when get content');
-    }
-    return this._content;
+    
+    throw new Error('must be a file when get content');
   }
   /**
    * set file content
