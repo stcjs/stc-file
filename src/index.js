@@ -179,7 +179,7 @@ export default class {
       this.prop('contentGetted', true);
       return this._content;  
     }
-    
+
     throw new Error('must be a file when get content');
   }
   /**
@@ -274,6 +274,7 @@ export default class {
     if(this._promises[key]){
       return this._promises[key].value;
     }
+    // use timer to avoid Node.js exit
     let timer = setInterval(() => {}, 100 * 1000);
     let promise = wait ? this.await.run(key, callback) : Promise.resolve(callback());
     let value = await promise.then(data => {
