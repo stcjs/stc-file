@@ -261,6 +261,7 @@ export default class {
       item.deferred.resolve(value);
       item.deferred = null;
       item.value = value;
+      return;
     }
     if(value === undefined){
       return item.value;
