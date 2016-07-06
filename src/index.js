@@ -187,7 +187,7 @@ export default class {
    */
   setContent(content){
     if(!isStream(content) && !isBuffer(content) && !isString(content)){
-      throw new Error('content data type is not valid');
+      throw new Error('content type is not valid, file is `' + this.path + '`');
     }
     if(content === this._content){
       return this;
