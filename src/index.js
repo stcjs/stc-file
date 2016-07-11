@@ -79,29 +79,6 @@ export default class {
     return this.pathHistory.indexOf(filePath) > -1;
   }
   /**
-   * pipe to stream
-   */
-  pipe(stream, opt = {
-    end: true
-  }){
-    let content = this.content;
-    if(isStream(content)){
-      return content.pipe(stream, opt);
-    }
-    if(isBuffer(content)){
-      if(opt.end){
-        stream.end(content);
-      }else{
-        stream.write(content);
-      }
-      return stream;
-    }
-    if(opt.end){
-      stream.end();
-    }
-    return stream;
-  }
-  /**
    * get path extname
    */
   get extname(){
@@ -148,19 +125,15 @@ export default class {
     return stat && stat.isFile();
   }
   /**
-   * is directory
-   */
-  isDirectory(){
-    let stat = this.stat;
-    return stat && stat.isDirectory();
-  }
-  /**
    * get file content
    */
   async getContent(encoding = null, notFoundDefaultValue){
     if(this.prop('contentGetted')){
       if(this._content === null){
         this._content = this.astHandle.stringify(this._ast, this);
+      }
+      if(Buffer.isBuffer(this._content) && encoding !== null){
+        this._content = this._content.toString(encoding);
       }
       return this._content;
     }
@@ -186,7 +159,7 @@ export default class {
    * set file content
    */
   setContent(content){
-    if(!isStream(content) && !isBuffer(content) && !isString(content)){
+    if(!isBuffer(content) && !isString(content)){
       throw new Error('content type is not valid, file is `' + this.path + '`');
     }
     if(content === this._content){
@@ -218,9 +191,6 @@ export default class {
    * set file content ast
    */
   setAst(ast){
-    // if(ast === this._ast){
-    //   return this;
-    // }
     this._ast = ast;
     this._content = null;
     this.prop('contentGetted', true);
