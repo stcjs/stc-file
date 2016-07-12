@@ -2,7 +2,7 @@
 
 import path from 'path';
 import fs from 'fs';
-import {isStream, isBuffer, promisify, isString, defer} from 'stc-helper';
+import {isBuffer, promisify, isString, defer} from 'stc-helper';
 import Dependence from './dependence.js';
 import Await from './await.js';
 
@@ -241,18 +241,24 @@ export default class {
   /**
    * run async function
    */
-  async run(key, callback, wait = true){
+  async run(key, callback){
     if(this._promises[key]){
       return this._promises[key].value;
     }
     // use timer to avoid Node.js exit
-    let timer = setInterval(() => {}, 100 * 1000);
-    let promise = wait ? this.await.run(key, callback) : Promise.resolve(callback());
+    //let timer = setInterval(() => {}, 100 * 1000);
+    let promise = this.await.run(key, callback);
+    // avoid promise never resolve or reject
+    let timeout = setTimeout(() => {
+      promise = callback();
+    }, 5 * 1000);
     let value = await promise.then(data => {
-      clearInterval(timer);
+      //clearInterval(timer);
+      clearTimeout(timeout);
       return data;
     }).catch(err => {
-      clearInterval(timer);
+      //clearInterval(timer);
+      clearTimeout(timeout);
       return Promise.reject(err);
     });
     this._promises[key] = {value};
