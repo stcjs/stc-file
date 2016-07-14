@@ -133,7 +133,7 @@ export default class {
         this._content = this.astHandle.stringify(this._ast, this);
       }
       if(Buffer.isBuffer(this._content) && encoding !== null){
-        this._content = this._content.toString(encoding);
+        return this._content.toString(encoding);
       }
       return this._content;
     }
@@ -141,9 +141,12 @@ export default class {
     if(this.isFile()){
       let fn = promisify(fs.readFile, fs);
       this._content = await this.await.run('getFileContent', () => {
-        return fn(this.path, encoding);
+        return fn(this.path);
       });
       this.prop('contentGetted', true);
+      if(encoding !== null){
+        return this._content.toString(encoding);
+      }
       return this._content;
     }
     
