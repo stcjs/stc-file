@@ -156,7 +156,7 @@ export default class {
       return this._content;  
     }
 
-    throw new Error('must be a file when get content');
+    throw new Error('must be a file when get content, path is ' + this.path);
   }
   /**
    * set file content
