@@ -107,7 +107,7 @@ export default class {
       return this._stat;
     }
     try{
-      this._stat = fs.statSync(this.path);
+      this._stat = fs.statSync(this.pathHistory[0]);
     }catch(e){}
     return this._stat;
   }
