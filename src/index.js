@@ -141,7 +141,7 @@ export default class {
     if(this.isFile()){
       let fn = promisify(fs.readFile, fs);
       this._content = await this.await.run('getFileContent', () => {
-        return fn(this.pathHistory[this.pathHistory.length - 1]);
+        return fn(this.pathHistory[0]);
       });
       this.prop('contentGetted', true);
       if(encoding !== null){
