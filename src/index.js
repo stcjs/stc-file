@@ -132,8 +132,12 @@ export default class {
       if(this._content === null){
         this._content = this.astHandle.stringify(this._ast, this);
       }
-      if(Buffer.isBuffer(this._content) && encoding !== null){
+      let isBuf = Buffer.isBuffer(this._content);
+      if(isBuf && encoding !== null){
         return this._content.toString(encoding);
+      }
+      if(!isBuf && encoding === null){
+        return new Buffer(this._content);
       }
       return this._content;
     }
