@@ -23,19 +23,32 @@ export default class Await {
    */
   run(key, fn){
     if(!(key in this.queue)){
-      this.queue[key] = [];
+      this.queue[key] = {value: undefined, arr: []};
+      let item = this.queue[key];
       return Promise.resolve(fn()).then(data => {
-        this.queue[key].forEach(deferred => deferred.resolve(data));
-        delete this.queue[key];
+        item.arr.forEach(deferred => deferred.resolve(data));
+        item.arr = [];
+        item.value = data;
         return data;
       }).catch(err => {
-        this.queue[key].forEach(deferred => deferred.reject(err));
-        delete this.queue[key];
+        item.arr.forEach(deferred => deferred.reject(err));
+        item.arr = [];
+        item.value = err;
+        item.error = true;
         return Promise.reject(err);
       });
     }else{
+      let item = this.queue[key];
       let deferred = defer();
-      this.queue[key].push(deferred);
+      if(item.value !== undefined){
+        if(item.error){
+          deferred.reject(item.value);
+        }else{
+          deferred.resolve(item.value);
+        }
+      }else{
+        item.arr.push(deferred);
+      }
       return deferred.promise;
     }
   }
