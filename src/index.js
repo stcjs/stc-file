@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import {isBuffer, promisify, isString, defer} from 'stc-helper';
 import Dependence from './dependence.js';
-import Await from './await.js';
+import Await from 'stc-await';
 
 /**
  * ast default handle

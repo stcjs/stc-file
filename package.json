@@ -21,8 +21,9 @@
   }],
   "main": "lib/index.js",
   "dependencies": {
+    "babel-runtime": "6.x.x",
     "stc-helper": "1.x.x",
-    "babel-runtime": "6.x.x"
+    "stc-await": "1.x.x"
   },
   "devDependencies": {
     "ava": "^0.14.0",
