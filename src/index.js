@@ -248,7 +248,10 @@ export default class {
   /**
    * run async function
    */
-  async run(key, callback){
+  async run(key, callback, cache = true){
+    if(cache === false){
+      return callback();
+    }
     if(this._promises[key]){
       return this._promises[key].value;
     }
